@@ -23,7 +23,6 @@ from concurrent import futures
 import grpc
 from opentelemetry import trace, metrics
 
-
 # Local
 import demo_pb2
 import demo_pb2_grpc
@@ -31,12 +30,11 @@ from grpc_health.v1 import health_pb2
 from grpc_health.v1 import health_pb2_grpc
 from logger import getJSONLogger
 
-from metrics import (
-    init_metrics
-)
+from metrics import init_metrics
 
 cached_ids = []
 first_run = True
+
 
 class RecommendationService(demo_pb2_grpc.RecommendationServiceServicer):
     def ListRecommendations(self, request, context):
@@ -49,17 +47,21 @@ class RecommendationService(demo_pb2_grpc.RecommendationServiceServicer):
         response.product_ids.extend(prod_list)
 
         # Collect metrics for this service
-        rec_svc_metrics["app_recommendations_counter"].add(len(prod_list), {'recommendation.type': 'catalog'})
+        rec_svc_metrics["app_recommendations_counter"].add(
+            len(prod_list), {"recommendation.type": "catalog"}
+        )
 
         return response
 
     def Check(self, request, context):
         return health_pb2.HealthCheckResponse(
-            status=health_pb2.HealthCheckResponse.SERVING)
+            status=health_pb2.HealthCheckResponse.SERVING
+        )
 
     def Watch(self, request, context):
         return health_pb2.HealthCheckResponse(
-            status=health_pb2.HealthCheckResponse.UNIMPLEMENTED)
+            status=health_pb2.HealthCheckResponse.UNIMPLEMENTED
+        )
 
 
 def get_product_list(request_product_ids):
@@ -69,8 +71,8 @@ def get_product_list(request_product_ids):
         max_responses = 5
 
         # Formulate the list of characters to list of strings
-        request_product_ids_str = ''.join(request_product_ids)
-        request_product_ids = request_product_ids_str.split(',')
+        request_product_ids_str = "".join(request_product_ids)
+        request_product_ids = request_product_ids_str.split(",")
 
         # Feature flag scenario - Cache Leak
         if check_feature_flag("recommendationCache"):
@@ -82,7 +84,7 @@ def get_product_list(request_product_ids):
                 cat_response = product_catalog_stub.ListProducts(demo_pb2.Empty())
                 response_ids = [x.id for x in cat_response.products]
                 cached_ids = cached_ids + response_ids
-                cached_ids = cached_ids + cached_ids[:len(cached_ids) // 4]
+                cached_ids = cached_ids + cached_ids[: len(cached_ids) // 4]
                 product_ids = cached_ids
             else:
                 span.set_attribute("app.cache_hit", True)
@@ -114,13 +116,15 @@ def get_product_list(request_product_ids):
 def must_map_env(key: str):
     value = os.environ.get(key)
     if value is None:
-        raise Exception(f'{key} environment variable must be set')
+        raise Exception(f"{key} environment variable must be set")
     return value
+
 
 def check_feature_flag(flag_name: str):
     flag = feature_flag_stub.GetFlag(demo_pb2.GetFlagRequest(name=flag_name)).flag
     logger.info(flag)
     return flag.enabled
+
 
 if __name__ == "__main__":
     # Initialize Traces and Metrics
@@ -128,9 +132,9 @@ if __name__ == "__main__":
     meter = metrics.get_meter_provider().get_meter("recommendationservice")
     rec_svc_metrics = init_metrics(meter)
 
-    port = must_map_env('RECOMMENDATION_SERVICE_PORT')
-    catalog_addr = must_map_env('PRODUCT_CATALOG_SERVICE_ADDR')
-    ff_addr = must_map_env('FEATURE_FLAG_GRPC_SERVICE_ADDR')
+    port = must_map_env("RECOMMENDATION_SERVICE_PORT")
+    catalog_addr = must_map_env("PRODUCT_CATALOG_SERVICE_ADDR")
+    ff_addr = must_map_env("FEATURE_FLAG_GRPC_SERVICE_ADDR")
 
     pc_channel = grpc.insecure_channel(catalog_addr)
     ff_channel = grpc.insecure_channel(ff_addr)
@@ -146,10 +150,10 @@ if __name__ == "__main__":
     health_pb2_grpc.add_HealthServicer_to_server(service, server)
 
     # Start logger
-    logger = getJSONLogger('recommendationservice-server')
+    logger = getJSONLogger("recommendationservice-server")
     logger.info(f"RecommendationService listening on port: {port}")
 
     # Start server
-    server.add_insecure_port(f'[::]:{port}')
+    server.add_insecure_port(f"[::]:{port}")
     server.start()
     server.wait_for_termination()
