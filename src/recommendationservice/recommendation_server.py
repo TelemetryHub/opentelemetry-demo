@@ -151,9 +151,10 @@ if __name__ == "__main__":
 
     # Start logger
     logger = getJSONLogger("recommendationservice-server")
-    logger.info(f"RecommendationService listening on port: {port}")
 
     # Start server
-    server.add_insecure_port(f"[::]:{port}")
-    server.start()
+    with tracer.start_as_current_span("init_server"):
+        server.add_insecure_port(f"[::]:{port}")
+        server.start()
+        logger.info(f"RecommendationService listening on port: {port}")
     server.wait_for_termination()

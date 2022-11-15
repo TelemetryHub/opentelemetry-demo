@@ -20,15 +20,15 @@ from pythonjsonlogger import jsonlogger
 from opentelemetry import trace
 
 from opentelemetry.sdk._logs import (
-    LoggerProvider,
+    LogEmitterProvider,
     LoggingHandler,
-    set_logger_provider,
+    set_log_emitter_provider,
 )
 from opentelemetry.exporter.otlp.proto.grpc._log_exporter import (
     OTLPLogExporter,
 )
 from opentelemetry.sdk._logs.export import (
-    BatchLogRecordProcessor,
+    BatchLogProcessor,
 )
 
 
@@ -49,13 +49,16 @@ def getOtelLogHandler():
     log_exporter = OTLPLogExporter()
     # print(f"Exporter endpoint: {log_exporter.endpoint}")
     # print(repr(log_exporter))
-    # log_emitter_provider = LogEmitterProvider()
-    # raise SystemExit()
-    # set_log_emitter_provider(log_emitter_provider)
-    logger_provider = LoggerProvider()
-    logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
-    set_logger_provider(logger_provider)
-    return LoggingHandler(level=logging.DEBUG, logger_provider=logger_provider)
+    log_emitter_provider = LogEmitterProvider()
+    set_log_emitter_provider(log_emitter_provider)
+    log_emitter_provider.add_log_processor(BatchLogProcessor(log_exporter))
+    return LoggingHandler(
+        level=logging.DEBUG, log_emitter_provider=log_emitter_provider
+    )
+
+    # logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
+    # set_logger_provider(logger_provider)
+    # return LoggingHandler(level=logging.DEBUG, logger_provider=logger_provider)
 
 
 def getJSONLogger(name):
