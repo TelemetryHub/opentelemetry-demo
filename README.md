@@ -1,4 +1,4 @@
-# ![otel-photo](./docs/img/opentelemetry-logo-nav.png) OpenTelemetry Demo
+# ![otel-photo](./docs/img/opentelemetry-logo-nav.png) OpenTelemetry Demo - TelemetryHub backend
 
 [![Slack](https://img.shields.io/badge/slack-@cncf/otel/demo-brightgreen.svg?logo=slack)](https://cloud-native.slack.com/archives/C03B4CWV4DA)
 [![Version](https://img.shields.io/github/v/release/open-telemetry/opentelemetry-demo?color=blueviolet)](https://github.com/open-telemetry/opentelemetry-demo/releases)
@@ -6,11 +6,15 @@
 [![Downloads](https://img.shields.io/docker/pulls/otel/demo)](https://hub.docker.com/r/otel/demo)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?color=red)](https://github.com/open-telemetry/opentelemetry-demo/blob/main/LICENSE)
 
-## Welcome to the OpenTelemetry Astronomy Shop Demo
+## Welcome to the TelemetryHub-specific OpenTelemetry Astronomy Shop Demo
 
 This repository contains the OpenTelemetry Astronomy Shop, a microservice-based
 distributed system intended to illustrate the implementation of OpenTelemetry in
 a near real-world environment.
+
+**This particular branch is configured by default to send OTel signals to a [TelemetryHub](https://telemetryhub.com)
+backend. The only thing missing is a valid Ingest Key from your TelemetryHub account.
+With that in hand, check out [Quick start](#quick-start) below!**
 
 Our goals are threefold:
 

@@ -8,10 +8,10 @@
 
 ## Clone Repo
 
-- Clone the Webstore Demo repository:
+- Clone this repository:
 
 ```shell
-git clone https://github.com/open-telemetry/opentelemetry-demo.git
+git clone https://github.com/TelemetryHub/opentelemetry-demo.git
 ```
 
 ## Open Folder
@@ -21,6 +21,11 @@ git clone https://github.com/open-telemetry/opentelemetry-demo.git
 ```shell
 cd opentelemetry-demo/
 ```
+
+## Add Ingest Key
+A custom `otelcol-config-extras.yml` file has been added to this repo which configures
+pipelines to send to TelemetryHub. Just add your Ingest Key as described in
+[BYOB](#bring-your-own-backend) below!
 
 ## Run Docker Compose
 
@@ -50,10 +55,8 @@ Once the images are built and containers are started you can access:
 
 ## Bring your own backend
 
-Likely you want to use the Webstore as a demo application for an observability
-backend you already have (e.g. an existing instance of Jaeger, Zipkin, or one
-of the [vendor of your choice](https://opentelemetry.io/vendors/).
-
+Likely you want to use this as a demo application for an observability
+backend you already have (e.g. TelemetryHub, right?).
 OpenTelemetry Collector can be used to export telemetry data to multiple
 backends. By default, the collector in the demo application will merge the
 configuration from two files:
@@ -61,34 +64,8 @@ configuration from two files:
 - otelcol-config.yml
 - otelcol-config-extras.yml
 
-To add your backend, open the file
-[src/otelcollector/otelcol-config-extras.yml](../src/otelcollector/otelcol-config-extras.yml)
-with an editor.
-
-- Start by adding a new exporter. For example, if your backend supports
-  OTLP over HTTP, add the following:
-
-```yaml
-exporters:
-  otlphttp/example:
-    endpoint: <your-endpoint-url>
-```
-
-- Then add a new pipeline with your new exporter:
-
-```yaml
-service:
-  pipelines:
-    traces:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [otlphttp/example]
-```
-
-Vendor backends might require you to add additional parameters for
-authentication, please check their documentation. Some backends require
-different exporters, you may find them and their documentation available at
-[opentelemetry-collector-contrib/exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter).
+**Edit otelcol-config-extras.yml and input your own Ingest Key to begin sending data to
+TelemetryHub. The necessary pipelines have already been added.**
 
 After updating the `otelcol-config-extras.yml`, start the demo by running
 `docker compose up`. After a while, you should see the traces flowing into

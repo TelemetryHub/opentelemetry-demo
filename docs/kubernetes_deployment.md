@@ -30,6 +30,11 @@ helm install my-otel-demo open-telemetry/opentelemetry-demo
 > The OpenTelemetry Demo Helm chart version 0.11.0 or greater is required to
 > perform all usage methods mentioned below.
 
+**A telemetryhub-helm-values.yml file has been added at the root of this repository for
+use with the [BYOB](#bring-your-own-backend) process below. Just insert a valid Ingest
+Key for `$YOUR_INGEST_KEY` and specify that values file in your `helm install`
+command!**
+
 ## Use the Demo
 
 The demo application will need the services exposed outside of the Kubernetes

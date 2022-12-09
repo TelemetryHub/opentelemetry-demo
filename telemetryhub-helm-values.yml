@@ -1,0 +1,25 @@
+# Helm values for configuring otelcol to send to TelemetryHub
+# extra settings to be merged into OpenTelemetry Collector configuration
+opentelemetry-collector:
+  config:
+    exporters:
+      otlp/telemetryhub:
+        endpoint: otlp.telemetryhub.com:4317
+        headers:
+          # Ingest Key can be found via app.telemetryhub.com/servicegroups -> Manage
+          "X-TELEMETRYHUB-KEY": "$YOUR_INGEST_KEY"
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlp/telemetryhub]
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlp/telemetryhub]
+        logs:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlp/telemetryhub]
